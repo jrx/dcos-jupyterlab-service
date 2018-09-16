@@ -1,6 +1,6 @@
 # debian:9.5 - linux; amd64
 # https://github.com/docker-library/repo-info/blob/master/repos/debian/tag-details.md#debian95---linux-amd64
-FROM debian@sha256:f1f61086ea01a72b30c7287adee8c929e569853de03b7c462a8ac75e0d0224c4
+FROM debian@sha256:00c5748eb465a0139063c544de181177da504dfa4e545ac3c0ecd13b7363e70f
 
 ARG BUILD_DATE
 ARG CODENAME="stretch"
@@ -13,7 +13,7 @@ ARG DCOS_CLI_URL="https://downloads.dcos.io/binaries/cli/linux/x86-64"
 ARG DCOS_CLI_VERSION="1.11"
 ARG DCOS_COMMONS_URL="https://downloads.mesosphere.com/dcos-commons"
 ARG DCOS_COMMONS_VERSION="0.53.0"
-ARG DCOS_JUPYTERLAB_VERSION="1.2.0-0.34.0"
+ARG DCOS_JUPYTERLAB_VERSION="1.3.0-0.33.12"
 ARG DEBCONF_NONINTERACTIVE_SEEN="true"
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG DEBIAN_REPO="http://cdn-fastly.deb.debian.org"
@@ -240,14 +240,14 @@ RUN cd /tmp \
     && bash "./${CONDA_INSTALLER}" -u -b -p "${CONDA_DIR}" \
     && ${CONDA_DIR}/bin/conda update --json --all -yq \
     && ${CONDA_DIR}/bin/pip install --upgrade pip \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::blas \
     && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::conda \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::gsl \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::numpy-base \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::numpy \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::openblas \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::scikit-learn \
-    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages defaults::scipy \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::blas \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::boost \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::gsl \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::numpy \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::openblas \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::scikit-learn \
+    && ${CONDA_DIR}/bin/conda config --env --add pinned_packages conda-forge::scipy \
     && ${CONDA_DIR}/bin/conda config --system --prepend channels conda-forge \
     && ${CONDA_DIR}/bin/conda config --system --set auto_update_conda false \
     && ${CONDA_DIR}/bin/conda config --system --set show_channel_urls true \
@@ -333,6 +333,3 @@ COPY --chown="1000:100" jupyter_notebook_config.py "${HOME}/.jupyter/"
 COPY --chown="1000:100" beakerx.json "${HOME}/.jupyter/"
 
 USER "${NB_UID}"
-
-# Patch TensorFlowOnSpark to handle all Hadoop 3.x supported Filesystem URIs
-COPY --chown="1000:100" TFNode.py "${CONDA_DIR}/lib/python3.6/site-packages/tensorflowonspark/"
